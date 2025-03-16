@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Quiz Naruto Difficile 🥷</title>
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Roboto', sans-serif;
+      background: url('https://wall.alphacoders.com/big.php?i=604626') no-repeat center center fixed;
+      background-size: cover;
+      color: #fff;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      padding: 20px;
+      flex-direction: column;
+    }
+    .overlay {
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(0, 0, 0, 0.6);
+      z-index: -1;
+    }
+    .container {
+      background: rgba(0, 0, 0, 0.8);
+      padding: 20px;
+      border-radius: 15px;
+      width: 90%;
+      max-width: 400px;
+      min-height: 550px;
+      text-align: center;
+      box-shadow: 0 0 15px rgba(0, 0, 0, 0.5);
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      animation: fadeIn 1s ease-in;
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: scale(0.9); }
+      to { opacity: 1; transform: scale(1); }
+    }
+    .hidden { display: none; }
+    button {
+      padding: 10px;
+      border: none;
+      border-radius: 5px;
+      background-color: #ff6600;
+      color: #fff;
+      font-size: 16px;
+      cursor: pointer;
+      width: 100%;
+      margin: 5px 0;
+    }
+    button:hover { background-color: #e65c00; }
+    #timer { font-size: 24px; margin: 10px 0; }
+    .option { display: flex; align-items: center; margin: 5px 0; }
+    .option input { margin-right: 10px; }
+    footer { margin-top: 10px; font-size: 14px; opacity: 0.8; }
+  </style>
+</head>
+<body>
+  <div class="overlay"></div>
+
+  <div class="container" id="start-screen">
+    <h1>Quiz Naruto Difficile 🥷</h1>
+    <p>Entrez votre pseudo avant de commencer :</p>
+    <input type="text" id="pseudo" placeholder="Votre pseudo">
+    <button id="start-btn">Commencer 🚀</button>
+    <footer>Ma signature: !Ayooh</footer>
+  </div>
+
+  <div class="container hidden" id="quiz-screen">
+    <h2 id="question"></h2>
+    <div id="timer">⏳ 10</div>
+    <div id="options"></div>
+    <button id="next-btn" class="hidden">Suivant ➡️</button>
+    <footer>Ma signature: !Ayooh</footer>
+  </div>
+
+  <div class="container hidden" id="result-screen">
+    <h1>Quiz terminé ! 🎉</h1>
+    <p id="result-message"></p>
+    <footer>Ma signature: !Ayooh</footer>
+  </div>
+
+  <script>
+    // Tableau contenant les 20 questions difficiles sur Naruto
+    const questions = [
+      { 
+        question: "Mon regard ravageur cache le fardeau d’un sacrifice ultime. Qui suis-je ?", 
+        options: ["Itachi", "Madara", "Sasuke", "Shisui"], 
+        correct: ["Itachi"]
+      },
+      { 
+        question: "Obsédé par l’immortalité et le savoir interdit, j’ai semé le chaos. Qui suis-je ?", 
+        options: ["Orochimaru", "Kabuto", "Danzo", "Nagato"], 
+        correct: ["Orochimaru"]
+      },
+      { 
+        question: "Je porte la douleur et la rédemption en moi avec six âmes unifiées. Qui suis-je ?", 
+        options: ["Pain", "Obito", "Sasuke", "Zabuza"], 
+        correct: ["Pain"]
+      },
+      { 
+        question: "Quelle est l’origine exacte du sceau maudit apposé sur Naruto ?", 
+        options: ["Minato", "Jiraya", "Hiruzen", "Hashirama"], 
+        correct: ["Minato"]
+      },
+      { 
+        question: "Derrière mon masque et mon œil énigmatique, j’ai un passé marqué par la perte. Qui suis-je ?", 
+        options: ["Obito", "Kakashi", "Madara", "Itachi"], 
+        correct: ["Kakashi"]
+      },
+      { 
+        question: "Un démon en moi représente la force brute et la colère ancestrale. Qui est-ce ?", 
+        options: ["Kurama", "Shukaku", "Gyuki", "Matatabi"], 
+        correct: ["Kurama"]
+      },
+      { 
+        question: "Comment Jiraya a influencé Naruto ?", 
+        options: ["Lui a appris le Rasengan", "L’a protégé", "L’a inspiré", "L’a entraîné"], 
+        correct: ["Lui a appris le Rasengan", "L’a inspiré", "L’a entraîné"]
+      },
+      { 
+        question: "Qui a utilisé le Rinnegan dans Naruto ?", 
+        options: ["Nagato", "Sasuke", "Obito", "Madara", "Tobirama"], 
+        correct: ["Nagato", "Sasuke", "Madara"]
+      },
+      { 
+        question: "Quels personnages ont été Hokage ?", 
+        options: ["Tsunade", "Minato", "Sasuke", "Naruto", "Danzo"], 
+        correct: ["Tsunade", "Minato", "Naruto", "Danzo"]
+      },
+      { 
+        question: "Quels sont les démons à queues ?", 
+        options: ["Kurama", "Shukaku", "Kyubi", "Gyuki", "Matatabi"], 
+        correct: ["Kurama", "Shukaku", "Gyuki", "Matatabi"]
+      },
+      { 
+        question: "Qui a maîtrisé le mode ermite ?", 
+        options: ["Naruto", "Jiraya", "Hashirama", "Tobirama", "Orochimaru"], 
+        correct: ["Naruto", "Jiraya", "Hashirama"]
+      },
+      { 
+        question: "Qui est l’ancêtre du clan Uchiha ?", 
+        options: ["Indra", "Ashura", "Madara", "Sasuke"], 
+        correct: ["Indra"]
+      },
+      { 
+        question: "Quel est le but de l’Akatsuki ?", 
+        options: ["Créer un village secret", "Capturer les Bijuu", "Gagner la guerre", "Éradiquer Konoha"], 
+        correct: ["Capturer les Bijuu"]
+      },
+      { 
+        question: "Quel est le nom du maître de Kakashi ?", 
+        options: ["Minato", "Jiraya", "Hiruzen", "Tobirama"], 
+        correct: ["Minato"]
+      },
+      { 
+        question: "Quel est le plus grand secret d'Itachi ?", 
+        options: ["Le massacre des Uchiha", "La protection de Sasuke", "Sa loyauté envers Konoha", "Son amour pour Sakura"], 
+        correct: ["Le massacre des Uchiha"]
+      },
+      { 
+        question: "Quel est le rêve de Naruto ?", 
+        options: ["Devenir le plus grand Hokage", "Protéger son village", "Gagner le respect des autres", "Trouver l'amour"], 
+        correct: ["Devenir le plus grand Hokage"]
+      },
+      { 
+        question: "Qui est le plus grand ennemi de Konoha ?", 
+        options: ["Madara", "Orochimaru", "Obito", "Danzo"], 
+        correct: ["Madara", "Obito"]
+      },
+      { 
+        question: "Quel est le lien entre Naruto et Sasuke ?", 
+        options: ["Amis", "Rivaux", "Frères", "Éléments complémentaires"], 
+        correct: ["Rivaux", "Éléments complémentaires"]
+      },
+      { 
+        question: "Qui a détruit le clan Uchiha ?", 
+        options: ["Madara", "Itachi", "Obito", "Hiruzen"], 
+        correct: ["Itachi"]
+      },
+      { 
+        question: "Quel personnage possède le Sharingan ?", 
+        options: ["Sasuke", "Madara", "Kakashi", "Naruto"], 
+        correct: ["Sasuke", "Madara", "Kakashi"]
+      },
+      { 
+        question: "Qui a tué Jiraya ?", 
+        options: ["Pain", "Tobi", "Orochimaru", "Kabuto"], 
+        correct: ["Pain"]
+      }
+    ];
+
+    let currentQuestionIndex = 0;
+    let score = 0;
+    let pseudo = "";
+    let timerInterval;
+    let timeLeft = 10;
+
+    const startScreen = document.getElementById("start-screen");
+    const quizScreen = document.getElementById("quiz-screen");
+    const resultScreen = document.getElementById("result-screen");
+    const pseudoInput = document.getElementById("pseudo");
+    const startBtn = document.getElementById("start-btn");
+    const questionEl = document.getElementById("question");
+    const optionsEl = document.getElementById("options");
+    const nextBtn = document.getElementById("next-btn");
+    const timerEl = document.getElementById("timer");
+    const resultMessage = document.getElementById("result-message");
+
+    startBtn.addEventListener("click", () => {
+      pseudo = pseudoInput.value.trim();
+      if (pseudo === "") {
+        alert("Veuillez entrer votre pseudo !");
+        return;
+      }
+      startScreen.classList.add("hidden");
+      quizScreen.classList.remove("hidden");
+      loadQuestion();
+    });
+
+    function loadQuestion() {
+      if (currentQuestionIndex >= questions.length) {
+        endQuiz();
+        return;
+      }
+      const q = questions[currentQuestionIndex];
+      questionEl.textContent = q.question;
+      optionsEl.innerHTML = "";
+      const shuffledOptions = shuffle(q.options);  // Mélange les options
+      shuffledOptions.forEach(option => {
+        const label = document.createElement("label");
+        label.classList.add("option");
+        const checkbox = document.createElement("input");
+        checkbox.type = "checkbox";
+        checkbox.value = option;
+        label.appendChild(checkbox);
+        label.appendChild(document.createTextNode(option));
+        optionsEl.appendChild(label);
+      });
+      nextBtn.classList.add("hidden");
+      resetTimer();
+    }
+
+    function shuffle(array) {
+      for (let i = array.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [array[i], array[j]] = [array[j], array[i]];  // Échange les éléments
+      }
+      return array;
+    }
+
+    function resetTimer() {
+      clearInterval(timerInterval);
+      timeLeft = 10;
+      timerEl.textContent = `⏳ ${timeLeft}`;
+      timerInterval = setInterval(() => {
+        timeLeft--;
+        timerEl.textContent = `⏳ ${timeLeft}`;
+        if (timeLeft <= 0) {
+          clearInterval(timerInterval);
+          submitAnswer();
+        }
+      }, 1000);
+    }
+
+    function submitAnswer() {
+      clearInterval(timerInterval);
+      const selected = Array.from(optionsEl.querySelectorAll("input:checked")).map(input => input.value);
+      const correct = questions[currentQuestionIndex].correct;
+      if (selected.sort().toString() === correct.sort().toString()) score++;
+      currentQuestionIndex++;
+      loadQuestion();
+    }
+
+    nextBtn.addEventListener("click", submitAnswer);
+
+    function endQuiz() {
+      quizScreen.classList.add("hidden");
+      resultScreen.classList.remove("hidden");
+      resultMessage.innerHTML = `Pseudo : ${pseudo}<br>Score : ${score} / ${questions.length}`;
+    }
+  </script>
+</body>
+</html>
